@@ -1,0 +1,93 @@
+.creditwallet-page {
+  background: #f7f8fa;
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.creditwallet-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  margin-top: 8px;
+
+  h1 {
+    font-size: 40px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .creditwallet-desc {
+    color: #6D6D6D;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+}
+
+.creditwallet-form-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.creditwallet-form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+  label {
+    font-size: 16px;
+    font-weight: 400;
+    color: #6D6D6D;
+    margin-bottom: 7px;
+  }
+  input, textarea {
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 16px;
+    outline: none;
+    resize: none;
+  }
+}
+
+.creditwallet-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  .submit-btn {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 32px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .cancel-btn {
+    background: #fff;
+    color: #222;
+    border: 1px solid #bbb;
+    border-radius: 7px;
+    padding: 10px 32px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .receipt-btn {
+    background: #F88029;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 32px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: auto;
+  }
+}

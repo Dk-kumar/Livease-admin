@@ -1,0 +1,161 @@
+.checkups {
+padding: 20px;
+background: #fff;
+border-radius: 8px;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+font-family: "Inter", sans-serif;
+
+&__header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+
+&-actions {
+  display: flex;
+  gap: 10px;
+}
+
+
+}
+
+&__title {
+font-size: 20px;
+font-weight: 600;
+margin: 0;
+}
+
+&__subtitle {
+font-size: 14px;
+color: #666;
+margin-top: 4px;
+}
+
+&__controls {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+
+input[type="text"] {
+  flex: 1;
+  max-width: 250px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+
+  select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+  }
+}
+
+
+}
+
+&__table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 16px;
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #fafafa;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+}
+
+&__footer {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 14px;
+
+.btn--secondary {
+  padding: 6px 12px;
+  border: 1px solid #007bff;
+  background: #fff;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+}
+}
+
+/* Buttons */
+.btn {
+padding: 8px 14px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+font-size: 14px;
+
+&--primary {
+background: #007bff;
+color: #fff;
+}
+
+&--secondary {
+background: #fff;
+border: 1px solid #007bff;
+color: #007bff;
+}
+}
+
+/* Status tags */
+.status {
+padding: 4px 8px;
+border-radius: 12px;
+font-size: 12px;
+font-weight: 500;
+
+&--pending {
+background: #fff3cd;
+color: #856404;
+}
+&--completed {
+background: #d4edda;
+color: #155724;
+}
+&--active {
+background: #cce5ff;
+color: #004085;
+}
+&--rejected {
+background: #f8d7da;
+color: #721c24;
+}
+&--inactive {
+background: #e2e3e5;
+color: #6c757d;
+}
+}

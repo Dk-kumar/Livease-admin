@@ -1,0 +1,249 @@
+.payment-issue-page {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: flex-start;
+
+  .payment-issue-main {
+    width: 100%;
+    max-width: 711px;
+  }
+
+  .payment-issue-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 18px 0 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    margin-bottom: 0;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+
+    .payment-issue-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #000000;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      h2 {
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 0;
+        line-height: 36px;
+      }
+      .payment-issue-ticketno {
+        font-size: 18px;
+        color: #222;
+        font-weight: 400;
+      }
+    }
+
+    .payment-issue-messages {
+      padding-top: 20px;
+      flex: 1;
+      overflow-y: auto;
+      max-height: 450px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+
+      .payment-issue-message-row {
+        background: none;
+        border-radius: 8px;
+        padding: 0;
+        margin-bottom: 0;
+        &.support {
+          align-items: flex-end;
+          text-align: right;
+          .payment-issue-user {
+            flex-direction: row-reverse;
+            text-align: right;
+            .payment-issue-user-name {
+              text-align: right;
+            }
+          }
+          .payment-issue-message-content {
+            text-align: right;
+          }
+        }
+        &.user {
+          align-items: flex-start;
+          text-align: left;
+        }
+      }
+    }
+
+    .payment-issue-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+      img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+      .payment-issue-user-name {
+        font-weight: 500;
+        font-size: 18px;
+      }
+      .payment-issue-user-date {
+        font-size: 14px;
+        font-weight: 400;
+        color: #686868;
+      }
+    }
+
+    .payment-issue-message-content {
+      font-size: 20px;
+      color: #333333;
+      font-weight: 400;
+      margin-bottom: 6px;
+      padding-top: 20px;
+      p {
+        margin: 0 0 6px 0;
+        padding-bottom: 25px;
+      }
+    }
+
+    .payment-issue-attachments-label {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .payment-issue-attachments {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 0;
+      .payment-issue-attachment {
+        background: #fafbfc;
+        border-radius: 8px;
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        img {
+          width: 32px;
+          height: 32px;
+        }
+        .payment-issue-attachment-size {
+          color: #888;
+          font-size: 13px;
+        }
+        .payment-issue-attachment-download {
+          background: none;
+          border: none;
+          cursor: pointer;
+          img {
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+
+    .payment-issue-actions-row {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 18px 0 0 0;
+      .send-btn {
+        background: #2473C2;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 18px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .resolve-btn {
+        background: #27ae60;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 18px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .archive-btn {
+        background: #f7f8fa;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 7px;
+        padding: 8px 18px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .payment-issue-reply-card {
+    background: none;
+    border-radius: 10px;
+    padding: 10px 0 0 0;
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      font-size: 15px;
+      padding: 10px 12px;
+      margin-bottom: 0;
+      resize: none;
+      max-width: 659px;
+      outline: none;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    .payment-issue-reply-header {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #000000;
+
+    }
+  }
+}
+.payment-issue-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 18px 0 0 0;
+  .send-btn {
+    background: #2473C2;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .resolve-btn {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .archive-btn {
+    background: #f7f8fa;
+    color: #888;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: not-allowed;
+  }
+}
