@@ -1,5 +1,5 @@
 .sidebar {
-  position: fixed;  // make it sticky 
+  position: fixed; // make it sticky
   top: 0;
   left: 0;
   width: 211px;
@@ -23,32 +23,35 @@
     margin-top: 30px;
     height: 70%;
 
-    li {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 15px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      color: #111111;
-      margin-bottom: 8px;
-      transition: 0.2s;
-
-      .icon {
+    a {
+      text-decoration: none;
+      li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        border-radius: 8px;
         font-size: 16px;
-      }
+        font-weight: 500;
+        cursor: pointer;
+        color: #111111;
+        margin-bottom: 8px;
+        transition: 0.2s;
 
-      &:hover {
-        background: #f0f6ff;
-        color: #0057a5;
-      }
+        .icon {
+          font-size: 16px;
+        }
 
-      &.active {
-        background: #f0f6ff;
-        color: #0057a5;
-        font-weight: 600;
+        &:hover {
+          background: #f0f6ff;
+          color: #0057a5;
+        }
+
+        &.active {
+          background: #f0f6ff;
+          color: #0057a5;
+          font-weight: 600;
+        }
       }
     }
   }
