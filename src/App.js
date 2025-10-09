@@ -50,7 +50,7 @@ function App() {
           <Route path="user-management" element={<UserManagement />} />
           <Route path="flat" element={<Flat />} />
           <Route path="property-owner" element={<PropertyOwner />} />
-          <Route path="upload-property" element={<UploadProperty />} />
+          <Route path="add-property" element={<UploadProperty />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="credit-wallet" element={<CreditWallet />} />
           <Route path="support-ticket" element={<SupportTicket />} />
