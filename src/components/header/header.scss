@@ -17,8 +17,8 @@
     width: 605px;
 
     img {
-        padding: 14px;
-        padding-left: 19px;
+      padding: 14px;
+      padding-left: 19px;
     }
 
     input {
@@ -44,6 +44,8 @@
       align-items: center;
       cursor: pointer;
       transition: 0.2s;
+      height: 20px;
+      width: 35px;
 
       &:hover {
         background: #eaeaea;
@@ -61,14 +63,14 @@
       gap: 10px;
 
       img {
-        width: 54px;
+        width: 48px;
         aspect-ratio: 1;
       }
 
       .info {
         h4 {
           margin: 0;
-          font-size: 24px;
+          font-size: 22px;
           font-weight: 400;
         }
 
