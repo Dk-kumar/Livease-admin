@@ -11,23 +11,35 @@ const ContentAside = () => {
     { id: 1, label: "Dashboard", icon: "/assets/Vector.png", link: "/" },
     {
       id: 2,
-      label: "User Management",
+      label: "Tenant Management",
       icon: "/assets/Vector.png",
-      link: "/user-management",
+      link: "/tenant-management",
     },
     {
       id: 3,
+      label: "Landlord Management",
+      icon: "/assets/Vector.png",
+      link: "/landlord-management",
+    },
+    {
+      id: 3,
+      label: "Property Management",
+      icon: "/assets/Vector.png",
+      link: "/property-management",
+    },
+    {
+      id: 4,
       label: "Payments & Wallet",
       icon: "/assets/Vector.png",
       link: "/wallet",
     },
     {
-      id: 4,
+      id: 5,
       label: "Reports",
       icon: "/assets/Vector.png",
       link: "support-ticket",
     },
-    { id: 5, label: "Analytics", icon: "/assets/Vector.png" },
+    { id: 6, label: "Analytics", icon: "/assets/Vector.png" },
   ]);
 
   return (

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import "./login.scss";
 import { useNavigate } from "react-router-dom";
-// replace with your actual image path
+import { useState } from "react";
+import "./login.scss";
+import { signIn } from "../../server"; // your backend API call
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -23,14 +23,29 @@ const Login = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      // simulate login success
-      await new Promise((r) => setTimeout(r, 800));
-      localStorage.setItem("authToken", "sample_token"); // mark user as logged in
-      navigate("/"); // redirect to dashboard
-    } catch {
-      setError("Login failed");
+      setLoading(true);
+
+      // Call the real login API
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+      };
+
+      const response = await signIn(payload);
+      console.log(response)
+
+      // ✅ Expecting API response shape like:
+      // { success: true, token: "xyz", message: "Login successful" }
+      if (response?.token) {
+        localStorage.setItem("authToken", response.token);
+        navigate("/"); // redirect to dashboard
+      } else {
+        setError(response?.message || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }

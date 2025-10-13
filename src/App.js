@@ -41,14 +41,25 @@ function App() {
           path="/"
           element={
             // <ProtectedRoute>
-              <HomePage />
+            <HomePage />
             // </ProtectedRoute>
           }
         >
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="user-management" element={<UserManagement />} />
-          <Route path="flat" element={<Flat />} />
+          <Route
+            path="tenant-management"
+            element={<UserManagement compType={"tenant"} />}
+          />
+          <Route
+            path="landlord-management"
+            element={<UserManagement compType={"landlord"} />}
+          />
+          <Route
+            path="property-management"
+            element={<UserManagement compType={"property"} />}
+          />
+          <Route path="property/:id" element={<Flat />} />
           <Route path="property-owner" element={<PropertyOwner />} />
           <Route path="add-property" element={<UploadProperty />} />
           <Route path="wallet" element={<Wallet />} />

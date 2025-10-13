@@ -1,157 +1,296 @@
-import React, { useState } from 'react';
-import './userManagement.scss';
+import React, { useEffect, useState } from "react";
+import { getTenantUsers, getProperties } from "../../server";
+import "./userManagement.scss";
+import { useNavigate } from "react-router-dom";
 
-function UserManagement() {
-  const [users] = useState([
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Active",
-      verification: "Done",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Inactive",
-      verification: "Pending",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Active",
-      verification: "Done",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Inactive",
-      verification: "Failed",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Active",
-      verification: "Pending",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Inactive",
-      verification: "Failed",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Active",
-      verification: "Done",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Inactive",
-      verification: "Pending",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Active",
-      verification: "Done",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-    {
-      name: "Ramesh Sharma",
-      email: "xyx@gmail.com",
-      number: "+91 1112233344",
-      status: "Inactive",
-      verification: "Failed",
-      avatar: "/assets/3d_avatar_1.png",
-    },
-  ]);
+function UserManagement({ compType }) {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const recordsPerPage = 10;
+
+  const navigate = useNavigate();
+
+  // Fetch data based on compType
+  const fetchData = async (page = 1) => {
+    try {
+      setLoading(true);
+      let res;
+
+      if (compType === "property") {
+        res = await getProperties(page, recordsPerPage);
+        if (res?.properties) {
+          const updatedProperties = res.properties.map((prop) => ({
+            ...prop,
+            title: prop.property_title || "N/A",
+            name: prop.landlord?.name || "N/A",
+            bhk: Array.isArray(prop.bhk_type)
+              ? prop.bhk_type.join(", ")
+              : prop.bhk_type || "N/A",
+            rent: prop.rent_amount || 0,
+            status: prop.is_deleted ? "Inactive" : "Active",
+          }));
+          setData(updatedProperties);
+          setFilteredData(updatedProperties);
+          setTotalPages(res.total_pages || 1);
+          setCurrentPage(res.current_page || 1);
+        }
+      } else {
+        res = await getTenantUsers(page, recordsPerPage);
+        if (res?.users) {
+          const updatedUsers = res.users.map((user, index) => ({
+            ...user,
+            avatar: "/assets/3d_avatar_1.png",
+            status: index % 2 === 0 ? "Active" : "Inactive",
+            verification:
+              index % 3 === 0 ? "Done" : index % 3 === 1 ? "Pending" : "Failed",
+            listingCount: user.listingCount || Math.floor(Math.random() * 10),
+          }));
+          setData(updatedUsers);
+          setFilteredData(updatedUsers);
+          setTotalPages(res.total_pages || 1);
+          setCurrentPage(res.current_page || 1);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [compType]);
+
+  // Handle search
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredData(data);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = data.filter((item) => {
+        if (compType === "property") {
+          return (
+            item.title.toLowerCase().includes(query) ||
+            item.name.toLowerCase().includes(query) ||
+            item.bhk.toLowerCase().includes(query) ||
+            item.rent.toString().includes(query) ||
+            item.status.toLowerCase().includes(query)
+          );
+        } else {
+          return (
+            item.name.toLowerCase().includes(query) ||
+            item.email.toLowerCase().includes(query) ||
+            item.number.toLowerCase().includes(query)
+          );
+        }
+      });
+      setFilteredData(filtered);
+    }
+  }, [searchQuery, data, compType]);
+
+  // Handle pagination
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchData(page);
+  };
+
+  // Table headers
+  const headers =
+    compType === "property"
+      ? ["Title", "Name", "BHK", "Rent", "Status"]
+      : compType === "landlord"
+      ? [
+          "Name",
+          "Email",
+          "Number",
+          "Status",
+          "Verification",
+          "Listing Count",
+          "Action",
+        ]
+      : ["Name", "Email", "Number", "Status", "Verification", "Action"];
 
   return (
     <div className="user-management">
       <div className="user-management__header">
         <div>
-          <h1>User Management</h1>
-          <p>Manage Your Task and Activities.</p>
+          <h1>
+            {compType.charAt(0).toUpperCase() + compType.slice(1)} Management
+          </h1>
+          <p>Manage your task and activities.</p>
         </div>
-        <button className="user-management__new-tenant"><img src='/assets/iconplus.png'></img><span> New Tenant</span></button>
+
+        {/* New button navigates to /add-property */}
+        <button
+          className="user-management__new-tenant"
+          onClick={() =>
+            compType === "property"
+              ? navigate("/add-property")
+              : alert(`Create new ${compType}`)
+          }
+        >
+          <img src="/assets/iconplus.png" alt="plus" />
+          <span>
+            New{" "}
+            {compType === "property"
+              ? "Property"
+              : compType.charAt(0).toUpperCase() + compType.slice(1)}
+          </span>
+        </button>
       </div>
+
       <div className="user-management__controls">
-        <input className="user-management__search" placeholder="Search" />
-        <div className="user-management__filters">
-          <button><img src='/assets/Icon (2).png'></img><span>Date</span></button>
-          <button><img src='/assets/Icon (3).png'></img><span>Filter</span></button>
-          <button><img src='/assets/icondownarrow.png'></img><span>Status</span></button>
-        </div>
+        <input
+          className="user-management__search"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
+
       <div className="user-management__table-wrapper">
         <table className="user-management__table">
           <thead>
             <tr>
-              <th><input type="checkbox" /></th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Number</th>
-              <th>Status</th>
-              <th>Verification</th>
-              <th>Action</th>
+              {compType !== "property" && (
+                <th>
+                  <input type="checkbox" />
+                </th>
+              )}
+              {headers.map((h, idx) => (
+                <th key={idx}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {users.map((user, idx) => (
-              <tr key={idx}>
-                <td><input type="checkbox" /></td>
-                <td>
-                  <img src={user.avatar} alt="avatar" className="user-management__avatar" />
-                  {user.name}
-                </td>
-                <td>{user.email}</td>
-                <td>{user.number}</td>
-                <td className={user.status === "Active" ? "active" : "inactive"}>
-                  {user.status}
-                </td>
-                <td className={
-                  user.verification === "Done"
-                    ? "done"
-                    : user.verification === "Pending"
-                    ? "pending"
-                    : "failed"
-                }>
-                  {user.verification}
-                </td>
-                <td>
-                  <span className="user-management__action">
-                    <img src="/assets/Icon (1).png" alt="edit" />
-                  </span>
-                  <span className="user-management__action">
-                    <img src="/assets/icon.png" alt="delete" />
-                  </span>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan={
+                    compType === "property"
+                      ? 5
+                      : compType === "landlord"
+                      ? 8
+                      : 7
+                  }
+                >
+                  Loading data...
                 </td>
               </tr>
-            ))}
+            ) : filteredData.length > 0 ? (
+              filteredData.map((item, idx) => (
+                <tr
+                  key={item._id || idx}
+                  onClick={() =>
+                    compType === "property" && navigate(`/property/${item._id}`)
+                  }
+                >
+                  {compType !== "property" && (
+                    <td>
+                      <input type="checkbox" />
+                    </td>
+                  )}
+
+                  {compType === "property" ? (
+                    <>
+                      <td>{item.title}</td>
+                      <td>{item.name}</td>
+                      <td>{item.bhk}</td>
+                      <td>{item.rent}</td>
+                      <td
+                        className={
+                          item.status === "Active" ? "active" : "inactive"
+                        }
+                      >
+                        {item.status}
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>
+                        <img
+                          src={item.avatar}
+                          alt="avatar"
+                          className="user-management__avatar"
+                        />
+                        {item.name}
+                      </td>
+                      <td>{item.email}</td>
+                      <td>{item.number}</td>
+                      <td
+                        className={
+                          item.status === "Active" ? "active" : "inactive"
+                        }
+                      >
+                        {item.status}
+                      </td>
+                      <td
+                        className={
+                          item.verification === "Done"
+                            ? "done"
+                            : item.verification === "Pending"
+                            ? "pending"
+                            : "failed"
+                        }
+                      >
+                        {item.verification}
+                      </td>
+                      {compType === "landlord" && <td>{item.listingCount}</td>}
+                      <td>
+                        <span className="user-management__action">
+                          <img src="/assets/Icon (1).png" alt="edit" />
+                        </span>
+                        <span className="user-management__action">
+                          <img src="/assets/icon.png" alt="delete" />
+                        </span>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={
+                    compType === "property"
+                      ? 5
+                      : compType === "landlord"
+                      ? 8
+                      : 7
+                  }
+                >
+                  No data found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-        <div className="user-management__pagination">
-          1 of 100 <span className="user-management__next">Next &gt;</span>
-        </div>
+
+        {/* Pagination */}
+        {!loading && filteredData.length > 0 && (
+          <div className="user-management__pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              &lt; Prev
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next &gt;
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

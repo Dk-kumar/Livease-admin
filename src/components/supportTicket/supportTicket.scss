@@ -25,7 +25,7 @@
     display: flex;
     gap: 16px;
     button {
-      background: #2473C2;
+      background: #2473c2;
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -78,7 +78,7 @@
   .support-ticket-table-wrapper {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     padding: 0 0 12px 0;
   }
 
@@ -86,18 +86,19 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    th, td {
+    th,
+    td {
       padding: 12px 10px;
       text-align: left;
       font-size: 15px;
       vertical-align: middle;
-       input[type="checkbox"] {
+      input[type="checkbox"] {
         width: 16px;
         aspect-ratio: 1;
       }
     }
     th {
-      background: #2473C226;
+      background: #2473c226;
       font-weight: 600;
       color: #787878;
       font-size: 17px;
@@ -110,7 +111,6 @@
       background: #fff;
       font-size: 17px;
       font-weight: 400;
-
     }
   }
 
@@ -132,7 +132,7 @@
     font-weight: 500;
   }
   .status-resolved {
-    color: #2473C2;
+    color: #2473c2;
     font-weight: 500;
   }
 
@@ -156,7 +156,7 @@
     right: 0;
     background: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     min-width: 150px;
@@ -185,7 +185,7 @@
   }
 
   .support-ticket-next {
-    color: #2473C2;
+    color: #2473c2;
     cursor: pointer;
     font-weight: 500;
   }
@@ -193,8 +193,11 @@
 
 .support-ticket-modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.18);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -208,7 +211,7 @@
   min-width: 440px;
   max-width: 98vw;
   position: relative;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.12);
 
   h2 {
     font-size: 1.5rem;
@@ -236,8 +239,11 @@
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 5px;
+    white-space: nowrap;
   }
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     padding: 10px 12px;
     border: 1px solid #ddd;
     border-radius: 7px;
@@ -262,7 +268,7 @@
   font-weight: 500;
   cursor: pointer;
   align-self: flex-end;
-  margin-top: 22px;
+  // margin-top: 22px;
 }
 
 .modal-actions {
@@ -270,7 +276,7 @@
   justify-content: flex-end;
   margin-top: 10px;
   .modal-submit-btn {
-    background: #2473C2;
+    background: #2473c2;
     color: #fff;
     border: none;
     border-radius: 7px;
