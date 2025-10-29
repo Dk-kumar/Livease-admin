@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./propertyowner.scss";
+import { getProfileDetails, getPropertyByUserID } from "../../server";
+import { Link, useParams } from "react-router-dom";
 
 function PropertyOwner() {
-  const [owner] = useState({
-    name: "Manish Patel",
-    rating: 4.0,
-    location: "Surat, Gujrat",
-    phone: "+91 1112233344",
-    email: "xyz@gmail.com",
-    avatar: "/assets/3d_avatar_1.png",
-  });
+  const [owner, setOwner] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { id } = useParams();
 
   const [documents] = useState({
     property: [1, 2, 3],
@@ -56,35 +54,70 @@ function PropertyOwner() {
     language: "Hindi, Gujrati",
   });
 
-  const [listedProperties] = useState([
-    {
-      title: "4BHK-Flat",
-      location: "Bandra, Mumbai",
-      rent: "45,000/Month",
-      img: "/assets/Rectangle 33.png",
-    },
-    {
-      title: "4BHK-Flat",
-      location: "Bandra, Mumbai",
-      rent: "45,000/Month",
-      img: "/assets/Rectangle 33.png",
-    },
-    {
-      title: "4BHK-Flat",
-      location: "Bandra, Mumbai",
-      rent: "45,000/Month",
-      img: "/assets/Rectangle 33.png",
-    },
-    {
-      title: "4BHK-Flat",
-      location: "Bandra, Mumbai",
-      rent: "45,000/Month",
-      img: "/assets/Rectangle 33.png",
-    },
-  ]);
+  const [listedProperties, setListedProperties] = useState([]);
+  const [propertiesLoading, setPropertiesLoading] = useState(false);
+  const [propertiesError, setPropertiesError] = useState(null);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Fetch profile details
+  useEffect(() => {
+    let mounted = true;
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const res = await getProfileDetails(id);
+        if (!mounted) return;
+        if (res) {
+          // Map API fields to the expected owner shape
+          setOwner(res);
+        } else {
+          setError("No profile data returned");
+        }
+      } catch (err) {
+        console.error("getProfileDetails failed", err);
+        setError(err?.message || "Failed to load profile");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    if (id) fetchProfile();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
+
+  // Fetch properties for this user id
+  useEffect(() => {
+    let mounted = true;
+    const fetchProperties = async () => {
+      try {
+        setPropertiesLoading(true);
+        setPropertiesError(null);
+        const res = await getPropertyByUserID(id);
+        if (!mounted) return;
+        if (Array.isArray(res)) {
+          setListedProperties(res);
+        } else {
+          setListedProperties([]);
+          setPropertiesError("No properties found");
+        }
+      } catch (err) {
+        console.error("getPropertyByUserID failed", err);
+        setPropertiesError(err?.message || "Failed to load properties");
+        setListedProperties([]);
+      } finally {
+        if (mounted) setPropertiesLoading(false);
+      }
+    };
+
+    if (id) fetchProperties();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -103,6 +136,22 @@ function PropertyOwner() {
     };
   }, [dropdownOpen]);
 
+  if (loading) {
+    return (
+      <div className="property-owner-page">
+        <div className="owner-loading">Loading profile...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="property-owner-page">
+        <div className="owner-error">Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="property-owner-page">
       {/* Top Section */}
@@ -111,7 +160,7 @@ function PropertyOwner() {
         <div className="owner-header__avatar"></div>
         <div className="owner-header__info">
           <div className="owner-header__avatar-img">
-            <img src={owner.avatar} alt="owner" />
+            <img src={owner?.profile_pic} alt="owner" />
           </div>
           <div>
             <h2>{owner.name}</h2>
@@ -125,7 +174,7 @@ function PropertyOwner() {
               </div>
               <div className="owner-header__contact-item">
                 <img src="/assets/call_end.png"></img>
-                <span>{owner.phone}</span>
+                <span>{owner.number}</span>
               </div>
               <div className="owner-header__contact-item">
                 <img src="/assets/mark_email_unread.png"></img>
@@ -158,10 +207,8 @@ function PropertyOwner() {
           )}
         </div>
         <div className="owner-header__desc">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor. Lorem ipsum dolor sit amet, consectetur adipiscing
-          elit, sed do eiusmod tempor......{" "}
-          <span className="view-more">View More</span>
+          {owner?.about}
+          {/* <span className="view-more">View More</span> */}
         </div>
       </div>
 
@@ -259,17 +306,30 @@ function PropertyOwner() {
       <div className="owner-listed-properties-card">
         <h3>Listed Property</h3>
         <div className="owner-listed-properties-list">
-          {listedProperties.map((prop, idx) => (
-            <div key={idx} className="owner-property-card">
-              <img
-                src={prop.img}
-                alt="property"
-                className="owner-property-img"
-              />
-              <div className="owner-property-title">{prop.title}</div>
-              <div className="owner-property-location">{prop.location}</div>
-              <div className="owner-property-rent">Rent : {prop.rent}</div>
-              <button className="owner-property-btn">View Property</button>
+          {listedProperties.map((prop) => (
+            <div key={prop._id} className="owner-property-card">
+              {prop.property_images[0] ? (
+                <img
+                  src={prop.property_images[0]}
+                  alt={prop.property_title || "property"}
+                  className="owner-property-img"
+                />
+              ) : (
+                <div
+                  className="owner-property-img owner-property-img--placeholder"
+                  aria-hidden="true"
+                ></div>
+              )}
+              <div className="owner-property-title">{prop.property_title}</div>
+              <div className="owner-property-location">
+                {prop.address.country}
+              </div>
+              <div className="owner-property-rent">
+                Rent : {prop.rent_amount.toLocaleString()}/Month
+              </div>
+              <Link className="owner-property-link" to={`/property/${prop._id}`}>
+                <button className="owner-property-btn">View Property</button>
+              </Link>
             </div>
           ))}
         </div>

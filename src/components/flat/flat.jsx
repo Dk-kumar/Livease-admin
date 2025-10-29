@@ -83,7 +83,7 @@ function Flat() {
       <div className="flat-page__section-one rad">
         <div className="flat-header">
           <div>
-            <h2>{property.property_title}</h2>
+            <h2>{property.title}</h2>
           </div>
           <div className="flat-header__rent">
             <span>

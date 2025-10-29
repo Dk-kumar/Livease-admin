@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getTenantUsers, getProperties } from "../../server";
+import { getUsersList, getProperties } from "../../server";
 import "./userManagement.scss";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function UserManagement({ compType }) {
   const [data, setData] = useState([]);
@@ -39,7 +39,7 @@ function UserManagement({ compType }) {
           setCurrentPage(res.current_page || 1);
         }
       } else {
-        res = await getTenantUsers(page, recordsPerPage);
+        res = await getUsersList(page, recordsPerPage, compType);
         if (res?.users) {
           const updatedUsers = res.users.map((user, index) => ({
             ...user,
@@ -103,7 +103,7 @@ function UserManagement({ compType }) {
   const headers =
     compType === "property"
       ? ["Title", "Name", "BHK", "Rent", "Status"]
-      : compType === "landlord"
+      : compType === "Landlord"
       ? [
           "Name",
           "Email",
@@ -174,7 +174,7 @@ function UserManagement({ compType }) {
                   colSpan={
                     compType === "property"
                       ? 5
-                      : compType === "landlord"
+                      : compType === "Landlord"
                       ? 8
                       : 7
                   }
@@ -198,7 +198,9 @@ function UserManagement({ compType }) {
 
                   {compType === "property" ? (
                     <>
-                      <td>{item.title}</td>
+                      <td>
+                        <Link className="name" to={`/property/${item._id}`}>{item.title}</Link>
+                      </td>
                       <td>{item.name}</td>
                       <td>{item.bhk}</td>
                       <td>{item.rent}</td>
@@ -218,7 +220,7 @@ function UserManagement({ compType }) {
                           alt="avatar"
                           className="user-management__avatar"
                         />
-                        {item.name}
+                        <Link className="name" to={`/profile/${item._id}`}>{item.name}</Link>
                       </td>
                       <td>{item.email}</td>
                       <td>{item.number}</td>
@@ -240,7 +242,7 @@ function UserManagement({ compType }) {
                       >
                         {item.verification}
                       </td>
-                      {compType === "landlord" && <td>{item.listingCount}</td>}
+                      {compType === "Landlord" && <td>{item.listingCount}</td>}
                       <td>
                         <span className="user-management__action">
                           <img src="/assets/Icon (1).png" alt="edit" />
@@ -259,7 +261,7 @@ function UserManagement({ compType }) {
                   colSpan={
                     compType === "property"
                       ? 5
-                      : compType === "landlord"
+                      : compType === "Landlord"
                       ? 8
                       : 7
                   }

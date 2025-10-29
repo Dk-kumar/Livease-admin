@@ -49,18 +49,18 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route
             path="tenant-management"
-            element={<UserManagement compType={"tenant"} />}
+            element={<UserManagement compType={"Tenant"} />}
           />
           <Route
             path="landlord-management"
-            element={<UserManagement compType={"landlord"} />}
+            element={<UserManagement compType={"Landlord"} />}
           />
           <Route
             path="property-management"
             element={<UserManagement compType={"property"} />}
           />
           <Route path="property/:id" element={<Flat />} />
-          <Route path="property-owner" element={<PropertyOwner />} />
+          <Route path="profile/:id" element={<PropertyOwner />} />
           <Route path="add-property" element={<UploadProperty />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="credit-wallet" element={<CreditWallet />} />

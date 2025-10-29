@@ -1,37 +1,50 @@
 import { apiRequest } from "../util/helper/apiHelper";
-export const BASE_URL = "https://livease-backend.onrender.com/api/v1/admin";
-
+export const BASE_URL = "https://livease-backend.onrender.com/api/v1";
 export const signIn = (data) =>
   apiRequest({
-    endpoint: `${BASE_URL}/signInPassword`,
+    endpoint: `${BASE_URL}/admin/signInPassword`,
     method: "POST",
     data,
   });
 
-export const getTenantUsers = (page, recordsPerPage) =>
+export const getUsersList = (page, recordsPerPage, compType) =>
   apiRequest({
-    endpoint: `${BASE_URL}/getUsers/Tenant?page=${page}&limit=${recordsPerPage}`,
+    endpoint: `${BASE_URL}/admin/getUsers/${compType}?page=${page}&limit=${recordsPerPage}`,
     method: "GET",
     requiresAuth: true,
   });
 
 export const getProperties = (page, recordsPerPage) =>
   apiRequest({
-    endpoint: `${BASE_URL}/getProperties?page=${page}&limit=${recordsPerPage}`,
+    endpoint: `${BASE_URL}/admin/getProperties?page=${page}&limit=${recordsPerPage}`,
     method: "GET",
     requiresAuth: true,
   });
 
 export const getPropertyByID = (_ID) =>
   apiRequest({
-    endpoint: `${BASE_URL}/getProperty/${_ID}`,
+    endpoint: `${BASE_URL}/admin/getProperty/${_ID}`,
+    method: "GET",
+    requiresAuth: true,
+  });
+
+export const getPropertyByUserID = (_ID) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/property/userProperties?userId=${_ID}`,
+    method: "GET",
+    requiresAuth: true,
+  });
+
+export const getProfileDetails = (_ID) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/user/${_ID}`,
     method: "GET",
     requiresAuth: true,
   });
 
 export const addProperty = (payload) =>
   apiRequest({
-    endpoint: `${BASE_URL}/addProperty`,
+    endpoint: `${BASE_URL}/admin/addProperty`,
     data: payload,
     method: "POST",
     requiresAuth: true,
@@ -39,14 +52,14 @@ export const addProperty = (payload) =>
 
 export const getTickets = (page, recordsPerPage) =>
   apiRequest({
-    endpoint: `${BASE_URL}/getTickets?page=${page}&limit=${recordsPerPage}`,
+    endpoint: `${BASE_URL}/admin/getTickets?page=${page}&limit=${recordsPerPage}`,
     method: "GET",
     requiresAuth: true,
   });
 
 export const updateTicket = (_ID) =>
   apiRequest({
-    endpoint: `${BASE_URL}/updateTicket/${_ID}`,
+    endpoint: `${BASE_URL}/admin/updateTicket/${_ID}`,
     method: "PUT",
     requiresAuth: true,
   });
