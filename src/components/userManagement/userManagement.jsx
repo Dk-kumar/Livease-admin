@@ -39,7 +39,11 @@ function UserManagement({ compType }) {
           setCurrentPage(res.current_page || 1);
         }
       } else {
-        res = await getUsersList(page, recordsPerPage, compType);
+        res = await getUsersList(
+          page,
+          recordsPerPage,
+          compType === "landlord" ? "Landlord" : "Tenant"
+        );
         if (res?.users) {
           const updatedUsers = res.users.map((user, index) => ({
             ...user,
@@ -47,7 +51,7 @@ function UserManagement({ compType }) {
             status: index % 2 === 0 ? "Active" : "Inactive",
             verification:
               index % 3 === 0 ? "Done" : index % 3 === 1 ? "Pending" : "Failed",
-            listingCount: user.listingCount || Math.floor(Math.random() * 10),
+            listingCount: user.listings_count,
           }));
           setData(updatedUsers);
           setFilteredData(updatedUsers);
@@ -103,7 +107,7 @@ function UserManagement({ compType }) {
   const headers =
     compType === "property"
       ? ["Title", "Name", "BHK", "Rent", "Status"]
-      : compType === "Landlord"
+      : compType === "landlord"
       ? [
           "Name",
           "Email",
@@ -174,7 +178,7 @@ function UserManagement({ compType }) {
                   colSpan={
                     compType === "property"
                       ? 5
-                      : compType === "Landlord"
+                      : compType === "landlord"
                       ? 8
                       : 7
                   }
@@ -199,7 +203,9 @@ function UserManagement({ compType }) {
                   {compType === "property" ? (
                     <>
                       <td>
-                        <Link className="name" to={`/property/${item._id}`}>{item.title}</Link>
+                        <Link className="name" to={`/property/${item._id}`}>
+                          {item.title}
+                        </Link>
                       </td>
                       <td>{item.name}</td>
                       <td>{item.bhk}</td>
@@ -220,7 +226,12 @@ function UserManagement({ compType }) {
                           alt="avatar"
                           className="user-management__avatar"
                         />
-                        <Link className="name" to={`/profile/${item._id}`}>{item.name}</Link>
+                        <Link
+                          className="name"
+                          to={`/profile/${item._id}?userType=${compType}`}
+                        >
+                          {item.name}
+                        </Link>
                       </td>
                       <td>{item.email}</td>
                       <td>{item.number}</td>
@@ -242,7 +253,7 @@ function UserManagement({ compType }) {
                       >
                         {item.verification}
                       </td>
-                      {compType === "Landlord" && <td>{item.listingCount}</td>}
+                      {compType === "landlord" && <td>{item.listingCount}</td>}
                       <td>
                         <span className="user-management__action">
                           <img src="/assets/Icon (1).png" alt="edit" />
@@ -261,7 +272,7 @@ function UserManagement({ compType }) {
                   colSpan={
                     compType === "property"
                       ? 5
-                      : compType === "Landlord"
+                      : compType === "landlord"
                       ? 8
                       : 7
                   }

@@ -1,13 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./propertyowner.scss";
-import { getProfileDetails, getPropertyByUserID } from "../../server";
-import { Link, useParams } from "react-router-dom";
+import {
+  getProfileDetails,
+  getPropertyByUserID,
+  updateUserStatus,
+} from "../../server";
+import { Link, useParams, useLocation } from "react-router-dom";
 
 function PropertyOwner() {
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
+  const location = useLocation();
+  // read userType from url query param: ?userType=landlord
+  const query = new URLSearchParams(location.search);
+  const userTypeFromUrl = query.get("userType");
+  const isLandlordView = userTypeFromUrl === "landlord" ? true : false;
 
   const [documents] = useState({
     property: [1, 2, 3],
@@ -60,6 +69,7 @@ function PropertyOwner() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [actionInProgress, setActionInProgress] = useState(false);
 
   // Fetch profile details
   useEffect(() => {
@@ -136,6 +146,41 @@ function PropertyOwner() {
     };
   }, [dropdownOpen]);
 
+  // Handler to confirm and perform actions on this owner's profile (and properties if present)
+  const handleOwnerAction = async (actionLabel) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to ${actionLabel.toLowerCase()} this profile?`
+    );
+    if (!confirmed) return;
+
+    // Map label to API payload
+    let payloadForUser = null;
+    const label = actionLabel.toLowerCase();
+    if (label.includes("delete")) {
+      payloadForUser = { is_deleted: true };
+    } else if (label.includes("suspend") || label.includes("suspended")) {
+      payloadForUser = { status: "suspended" };
+    } else if (label.includes("approve") || label.includes("approved")) {
+      payloadForUser = { status: "approved" };
+    } else if (label.includes("reject") || label.includes("rejected")) {
+      payloadForUser = { status: "rejected" };
+    } else {
+      payloadForUser = { status: label };
+    }
+
+    try {
+      setActionInProgress(true);
+      await updateUserStatus(payloadForUser, id);
+
+      alert(`${actionLabel} action applied`);
+    } catch (err) {
+      console.error("Failed to apply action", err);
+      alert(`Failed to ${actionLabel}. Please try again.`);
+    } finally {
+      setActionInProgress(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="property-owner-page">
@@ -197,12 +242,35 @@ function PropertyOwner() {
           </button>
           {dropdownOpen && (
             <div className="owner-header__dropdown" ref={dropdownRef}>
-              <button>Edit Property</button>
-              <button>Suspend</button>
-              <button>Delete Profile</button>
-              <button>Approve</button>
-              <button>Reject</button>
-              <button>Add Property</button>
+              {/* action buttons - only show for landlord view */}
+              {isLandlordView ? (
+                <>
+                  <button onClick={() => handleOwnerAction("Suspend")}>
+                    Suspend
+                  </button>
+                  <button onClick={() => handleOwnerAction("Delete Profile")}>
+                    Delete Profile
+                  </button>
+                  <button onClick={() => handleOwnerAction("Approve")}>
+                    Approve
+                  </button>
+                  <button onClick={() => handleOwnerAction("Reject")}>
+                    Reject
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => handleOwnerAction("Suspend")}>
+                    Suspend
+                  </button>
+                  <button onClick={() => handleOwnerAction("Delete Profile")}>
+                    Delete Profile
+                  </button>
+                </>
+              )}
+              <Link to={`/add-property?userId=${id}&type=landlord`}>
+                <button>Add Property</button>
+              </Link>
             </div>
           )}
         </div>
@@ -232,7 +300,7 @@ function PropertyOwner() {
             </div>
           </div>
           {/* Preferences */}
-          <div className="owner-preferences-card">
+          {/* <div className="owner-preferences-card">
             <h3>Preferences</h3>
             <div className="owner-preferences-row">
               <span>Status</span>
@@ -246,7 +314,7 @@ function PropertyOwner() {
                 {preferences.language}
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
         {/* Wallet */}
         <div className="owner-card">
@@ -327,7 +395,10 @@ function PropertyOwner() {
               <div className="owner-property-rent">
                 Rent : {prop.rent_amount.toLocaleString()}/Month
               </div>
-              <Link className="owner-property-link" to={`/property/${prop._id}`}>
+              <Link
+                className="owner-property-link"
+                to={`/property/${prop._id}`}
+              >
                 <button className="owner-property-btn">View Property</button>
               </Link>
             </div>

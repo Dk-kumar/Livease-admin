@@ -1,0 +1,340 @@
+.edit-profile-setup {
+  /* ensure predictable sizing so padding/border don't cause overflow */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  font-family: "Segoe UI", sans-serif;
+  padding: 20px 20px 0;
+  background: #fff;
+  overflow: auto;
+  margin-left: 20px;
+  margin-right: 20px;
+
+  /* ---------- Common ---------- */
+  .label {
+    font-size: 16px;
+    font-weight: 500;
+    display: block;
+    margin: 10px 0 8px;
+  }
+
+  .input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /* allow inputs inside flex containers to shrink correctly and avoid overflow/overlap */
+    min-width: 0;
+    flex: 1 1 auto;
+
+    /* make date inputs visually consistent with text inputs */
+    &[type="date"] {
+      /* remove overly small max-height that caused squashed date inputs */
+      max-height: none;
+      min-height: 40px;
+      height: auto;
+      padding: 10px;
+      /* remove native browser inner controls sizing differences where appropriate */
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  }
+
+  .input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    /* allow children to wrap to next line when space is limited */
+    flex-wrap: wrap;
+
+    .input {
+      flex: 1;
+    }
+  }
+
+  .section {
+    margin-bottom: 14px;
+    position: relative;
+
+    .propertyname-input {
+      max-width: 352px;
+      width: 100%;
+      padding-right: 33px;
+    }
+
+    .locationIcon {
+      position: absolute;
+      top: 2.6rem; /* align with input padding and label spacing */
+      right: 8px;
+    }
+  }
+
+  /* ---------- Header ---------- */
+  .back-btn-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+
+    i {
+      padding-top: 2px;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  .primary-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    label {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #000;
+  }
+
+  /* ---------- Requirement ---------- */
+  .Ai-requirement {
+    position: relative;
+
+    .requirement-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px 10px 32px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    i {
+      position: absolute;
+      bottom: 18px;
+      right: 10px;
+      cursor: pointer;
+    }
+  }
+
+  /* ---------- Uploads ---------- */
+  .upload-btn {
+    margin-top: 10px;
+    background: #f8bd00;
+    color: #fff;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+  }
+
+  .uploaded-images {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+
+    .image-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .document-status {
+    margin-top: 8px;
+    color: #28a745;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ---------- Sliders ---------- */
+  .space-slider {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+
+    input {
+      width: 120px;
+      height: 30px;
+      min-width: 0;
+    }
+
+    .range-slider {
+      height: 4px !important;
+      width: 100% !important; /* allow slider to use available width */
+
+      &__range {
+        background: #f88029;
+        border-radius: 6px;
+      }
+
+      &__thumb {
+        width: 14px !important;
+        height: 14px !important;
+        background: #f88029;
+      }
+    }
+
+    .range-slider__thumb[data-lower] {
+      width: 0 !important;
+    }
+
+    &.single-thumb {
+      .range-slider__thumb[data-lower] {
+        width: 0 !important;
+      }
+    }
+
+    &.vertical-slider[data-vertical] {
+      height: 180px;
+    }
+  }
+
+  /* ---------- Checkbox ---------- */
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    label {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+
+  /* ---------- Groups ---------- */
+  .group-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .inner-section {
+      /* ensure label stacks above inputs and children take full width */
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+  }
+
+  /* Responsive: stack grouped fields on narrow screens to avoid overlap */
+  @media (max-width: 720px) {
+    .group-section {
+      grid-template-columns: 1fr;
+    }
+
+    .space-slider {
+      .range-slider {
+        width: 100% !important;
+      }
+    }
+  }
+
+  .ai-suggestion-wrapper {
+    display: flex;
+    gap: 18px;
+    margin-top: 6px;
+    align-items: center;
+
+    .ai-text-wrapper {
+      display: flex;
+      flex-direction: column;
+
+      .sub-text {
+        font-size: 10px;
+      }
+    }
+  }
+
+  /* ---------- AutoComplete ---------- */
+  .autocomplete-wrapper {
+    .form-input {
+      width: 100%;
+      padding: 10px;
+      padding-right: 34px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .suggestions-list {
+      width: 100%;
+    }
+
+    .icon-address {
+      top: 9px;
+    }
+  }
+
+  /* ---------- Actions ---------- */
+  .actions {
+    display: flex;
+    gap: 1rem;
+    margin: 20px 0;
+    width: 100%;
+    justify-content: end;
+
+    .skip-btn,
+    .save-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      width: 220px;
+    }
+
+    .skip-btn {
+      border: 1px solid #ccc;
+      background: none;
+    }
+
+    .save-btn {
+      background: #f88029;
+      color: #fff;
+      border: none;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
+}

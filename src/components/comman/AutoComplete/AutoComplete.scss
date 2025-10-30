@@ -1,0 +1,45 @@
+.autocomplete-wrapper {
+  position: relative; // Needed for absolute positioning of suggestions
+
+  .suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: absolute;
+    background-color: white;
+    width: 100%; // Adjust as needed
+    z-index: 1000;
+    top: 100%; // Position it right below the input
+    left: 0;
+
+    li {
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+
+      .suggestion-main-text {
+        font-weight: bold;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      .suggestion-secondary-text {
+        font-size: 0.8rem;
+        color: #777;
+      }
+    }
+  }
+
+  .icon-address {
+    position: absolute;
+    top: 17px;
+    right: 8px;
+  }
+}

@@ -35,6 +35,22 @@ export const getPropertyByUserID = (_ID) =>
     requiresAuth: true,
   });
 
+export const addProperties = (data) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/admin/addProperty`,
+    method: "POST",
+    data,
+    requiresAuth: true,
+  });
+
+export const updateUserStatus = (data, _id) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/admin/updateUser/${_id}`,
+    method: "PUT",
+    data,
+    requiresAuth: true,
+  });
+
 export const getProfileDetails = (_ID) =>
   apiRequest({
     endpoint: `${BASE_URL}/user/${_ID}`,
@@ -62,4 +78,13 @@ export const updateTicket = (_ID) =>
     endpoint: `${BASE_URL}/admin/updateTicket/${_ID}`,
     method: "PUT",
     requiresAuth: true,
+  });
+
+export const uploadDocs = (formDataToSend) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/profile/uploadAsset`,
+    method: "POST",
+    data: formDataToSend,
+    requiresAuth: true,
+    isFormData: true,
   });

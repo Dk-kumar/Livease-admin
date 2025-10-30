@@ -23,6 +23,7 @@ import RentalAgreement from "./components/RentalAgreement/RentalAgreement";
 import Login from "./components/login/login";
 
 import { Navigate } from "react-router-dom";
+import DetailsComponent from "./components/addProperty/addProperty";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("authToken"); // or any login flag
@@ -49,11 +50,11 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route
             path="tenant-management"
-            element={<UserManagement compType={"Tenant"} />}
+            element={<UserManagement compType={"tenant"} />}
           />
           <Route
             path="landlord-management"
-            element={<UserManagement compType={"Landlord"} />}
+            element={<UserManagement compType={"landlord"} />}
           />
           <Route
             path="property-management"
@@ -61,7 +62,7 @@ function App() {
           />
           <Route path="property/:id" element={<Flat />} />
           <Route path="profile/:id" element={<PropertyOwner />} />
-          <Route path="add-property" element={<UploadProperty />} />
+          <Route path="add-property" element={<DetailsComponent />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="credit-wallet" element={<CreditWallet />} />
           <Route path="support-ticket" element={<SupportTicket />} />
