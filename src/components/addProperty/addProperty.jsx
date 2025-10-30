@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import RangeSlider from "react-range-slider-input";
 import { useNavigate, useLocation } from "react-router-dom";
-import { addProperty, getPropertyByID } from "../../server";
+import {
+  addProperty,
+  getPropertyByID,
+  updatePropertyStatus,
+  uploadDocs,
+} from "../../server";
 import {
   prepareProfilePayload,
   mapAiResponseToFormData,
@@ -98,12 +103,13 @@ const FileUpload = ({ accountType, onUpload, uploaded }) => (
 
 /* ---------- Main Component ---------- */
 const DetailsComponent = () => {
-const location = useLocation();
+  const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
   const userId = queryParams.get("userId");
-  const type = queryParams.get("type");
-  const action = queryParams.get("action") || '';
+  const type = queryParams.get("type") || "landlord";
+  const action = queryParams.get("action") || "";
+  const propertyId = queryParams.get("propertyId");
 
   // Minimal local user state to preserve tenant vs landlord UI branching.
   const [user] = useState(() => {
@@ -137,7 +143,7 @@ const location = useLocation();
     preference: "",
     possession_date: "",
     lease_duration: "",
-    verification_document: null,
+    verification_document: [],
     aiSuggestion: [],
     property_type: "",
     is_primary: false,
@@ -172,15 +178,26 @@ const location = useLocation();
     });
   };
 
-  const handlePropertyImagesUpload = (files) => {
-    // UI-only: create object URLs so previews work in the browser during development.
-    const arr = Array.from(files || []).map((f) => URL.createObjectURL(f));
-    setFormData((prev) => ({
-      ...prev,
-      property_images: [...prev.property_images, ...arr],
-    }));
+  const handlePropertyImagesUpload = async (files) => {
+    setIsLoading(true);
+    try {
+      const uploadedImages = [];
+      for (let file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const result = await uploadDocs(fd);
+        uploadedImages.push(result.asset);
+      }
+      setFormData((prev) => ({
+        ...prev,
+        property_images: [...prev.property_images, ...uploadedImages],
+      }));
+    } catch (err) {
+      console.error("Image upload failed", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
   const toggleAiSuggestion = (enabled) =>
     setFormData((prev) => ({
       ...prev,
@@ -195,6 +212,63 @@ const location = useLocation();
   const handleBlur = (field) => {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
+
+  // If this page is opened in edit mode (action=edit), fetch the property
+  // and prefill the form with API response values.
+  useEffect(() => {
+    let mounted = true;
+    const prefill = async () => {
+      if (action !== "edit" || !propertyId) return;
+      try {
+        const res = await getPropertyByID(propertyId);
+        if (!mounted || !res) return;
+
+        const mapApiToForm = (p) => ({
+          property_requirement: p.property_requirement || "",
+          property_images: p.property_images || [],
+          property_name: p.title || p.property_title || "",
+          address: p.address || {},
+          about: p.property_description || p.about || "",
+          space: {
+            min: p.space?.min ?? p.area ?? 0,
+            max: p.space?.max ?? p.area ?? 0,
+          },
+          bhk_type: p.bhk_type || [],
+          locality_details: p.locality_details || {},
+          amenities: p.amenities || {},
+          furnishing: p.furnishing || "",
+          rental_budget: {
+            min: p.rental_budget?.min ?? p.rent_amount ?? "",
+            max: p.rental_budget?.max ?? "",
+          },
+          deposit: {
+            min: p.deposit?.min ?? p.deposit_amount ?? "",
+            max: p.deposit?.max ?? "",
+          },
+          preference: p.preferred_tenants || "",
+          possession_date: p.possession_date
+            ? new Date(p.possession_date).toISOString().slice(0, 10)
+            : "",
+          lease_duration: p.lease_duration || "",
+          // Ensure verification_document is always an array so uploads and
+          // payload building don't end up saving an empty string on the server.
+          verification_document: p.verification_document || [],
+          aiSuggestion: p.ai_pricing_enabled ? ["enabled"] : [],
+          property_type: p.property_type || "",
+          is_primary: p.is_primary || false,
+        });
+
+        setFormData((prev) => ({ ...prev, ...mapApiToForm(res) }));
+      } catch (err) {
+        console.error("Failed to prefill property for edit", err);
+      }
+    };
+
+    prefill();
+    return () => {
+      mounted = false;
+    };
+  }, [action, propertyId]);
   const handleSave = async () => {
     // Call the API to add property. Show basic success / failure feedback and
     // navigate back to profile/dashboard on success.
@@ -214,10 +288,17 @@ const location = useLocation();
         payload.landlord = userId;
       }
 
-      await addProperty(payload);
-      // notify user and navigate back to profile (existing back button goes to /profile)
-      alert("Property added successfully!");
-      navigate("/profile");
+      if (action === "edit" && propertyId) {
+        // When editing, call updatePropertyStatus to update the existing property
+        await updatePropertyStatus(payload, propertyId);
+        alert("Property updated successfully!");
+        navigate("/profile");
+      } else {
+        await addProperty(payload);
+        // notify user and navigate back to profile (existing back button goes to /profile)
+        alert("Property added successfully!");
+        navigate("/profile");
+      }
     } catch (err) {
       console.error("Failed to add property", err);
       alert("Failed to add property. Please try again.");
@@ -226,11 +307,22 @@ const location = useLocation();
     }
   };
 
-  const handleDocumentUpload = (file) => {
+  const handleDocumentUpload = async (file) => {
     // Store a placeholder/local reference for UI preview.
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setFormData((prev) => ({ ...prev, verification_document: url }));
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const result = await uploadDocs(fd);
+      handleInputChange("verification_document", [
+        ...formData.verification_document,
+        result.asset,
+      ]);
+    } catch (err) {
+      console.error("Document upload failed", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /* ---------- JSX ---------- */

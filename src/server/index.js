@@ -43,6 +43,14 @@ export const addProperties = (data) =>
     requiresAuth: true,
   });
 
+export const updatePropertyStatus = (data, _id) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/admin/updateProperty/${_id}`,
+    method: "PUT",
+    data,
+    requiresAuth: true,
+  });
+
 export const updateUserStatus = (data, _id) =>
   apiRequest({
     endpoint: `${BASE_URL}/admin/updateUser/${_id}`,

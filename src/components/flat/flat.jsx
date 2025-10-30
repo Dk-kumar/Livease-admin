@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getPropertyByID } from "../../server"; // getLandlordByID for landlord info
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPropertyByID, updatePropertyStatus } from "../../server"; // getLandlordByID for landlord info
 import "./flat.scss";
 
 function Flat() {
@@ -12,6 +12,10 @@ function Flat() {
     avatar: "/assets/3d_avatar_1.png",
   });
   const [loading, setLoading] = useState(true);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const [actionInProgress, setActionInProgress] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -42,6 +46,57 @@ function Flat() {
 
     fetchProperty();
   }, [id]);
+
+  // close dropdown on outside click and helpers for actions
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
+
+  const handleEditProperty = () => {
+    navigate(`/add-property?propertyId=${id}&action=edit`);
+  };
+
+  const handleSuspend = async () => {
+    const confirmed = window.confirm("Are you sure you want to suspend this property?");
+    if (!confirmed) return;
+    try {
+      setActionInProgress(true);
+      await updatePropertyStatus({ status: "suspended" }, id);
+      alert("Property suspended");
+      const refreshed = await getPropertyByID(id);
+      if (refreshed) setProperty(refreshed);
+    } catch (err) {
+      console.error("Failed to suspend property", err);
+      alert("Failed to suspend property. Please try again.");
+    } finally {
+      setActionInProgress(false);
+      setDropdownOpen(false);
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this property?");
+    if (!confirmed) return;
+    try {
+      setActionInProgress(true);
+      await updatePropertyStatus({ is_deleted: true }, id);
+      alert("Property deleted");
+      const refreshed = await getPropertyByID(id);
+      if (refreshed) setProperty(refreshed);
+    } catch (err) {
+      console.error("Failed to delete property", err);
+      alert("Failed to delete property. Please try again.");
+    } finally {
+      setActionInProgress(false);
+      setDropdownOpen(false);
+    }
+  };
 
   if (loading) return <div className="loading-text">Loading property...</div>;
   if (!property) return <div className="no-data">Property not found.</div>;
@@ -107,10 +162,28 @@ function Flat() {
           )}
           <div className="flat-actions">
             <button className="flat-share-btn">Share</button>
-            <div className="flat-actions-menu">
-              <button>Edit Property</button>
-              <button>Suspend</button>
-              <button>Delete Profile</button>
+            <div className="flat-actions-wrapper">
+              <button
+                className="flat-actions-toggle"
+                onClick={() => setDropdownOpen((o) => !o)}
+                aria-expanded={dropdownOpen}
+                aria-haspopup="true"
+              >
+                ⋯
+              </button>
+              {dropdownOpen && (
+                <div className="flat-actions-menu" ref={dropdownRef}>
+                  <button onClick={handleEditProperty} disabled={actionInProgress}>
+                    Edit Property
+                  </button>
+                  <button onClick={handleSuspend} disabled={actionInProgress}>
+                    Suspend
+                  </button>
+                  <button onClick={handleDeleteProfile} disabled={actionInProgress}>
+                    Delete Profile
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
