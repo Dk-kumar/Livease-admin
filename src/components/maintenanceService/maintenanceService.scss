@@ -79,6 +79,7 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    text-transform: capitalize;
     th, td {
       padding: 12px 10px;
       text-align: left;
@@ -98,10 +99,23 @@
       background: #fff;
       font-size: 18px;
       font-weight: 400;
+
+      a {
+        color: #000000;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 
-  .status-active {
+  .active {
+    color: #1bbf5c;
+    font-weight: 500;
+  }
+
+  .approved {
     color: #1bbf5c;
     font-weight: 500;
   }

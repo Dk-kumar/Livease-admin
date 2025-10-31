@@ -29,17 +29,23 @@ const ContentAside = () => {
     },
     {
       id: 4,
+      label: "Maintenance Requests",
+      icon: "/assets/Vector.png",
+      link: "/maintenance-service",
+    },
+    {
+      id: 5,
       label: "Payments & Wallet",
       icon: "/assets/Vector.png",
       link: "/wallet",
     },
     {
-      id: 5,
+      id: 6,
       label: "Reports",
       icon: "/assets/Vector.png",
       link: "support-ticket",
     },
-    { id: 6, label: "Analytics", icon: "/assets/Vector.png" },
+    { id: 7, label: "Analytics", icon: "/assets/Vector.png" },
   ]);
 
   return (

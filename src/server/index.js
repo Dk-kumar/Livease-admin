@@ -96,3 +96,17 @@ export const uploadDocs = (formDataToSend) =>
     requiresAuth: true,
     isFormData: true,
   });
+
+export const getMaintenanceRequests = (page, recordsPerPage) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/admin/getServiceRequests?page=${page}&limit=${recordsPerPage}`,
+    method: "GET",
+    requiresAuth: true,
+  });
+
+export const getMaintenanceRequestsById = (id) =>
+  apiRequest({
+    endpoint: `${BASE_URL}/admin/getServiceRequest/${id}`,
+    method: "GET",
+    requiresAuth: true,
+  });
