@@ -164,7 +164,7 @@ export const prepareProfilePayload = (formData, accountType) => {
     deposit_amount: Number(formData.deposit?.min),
     possession_date: formData.possession_date || "",
     lease_duration: formData.lease_duration || "",
-    verification_document: formData.verification_document || "",
+    verification_document: formData.verification_document || null,
     property_type: formData.property_type || "",
   };
 
@@ -172,7 +172,7 @@ export const prepareProfilePayload = (formData, accountType) => {
   if (accountType === "landlord") {
     basePayload.property_images = formData.property_images || [];
     basePayload.title = formData.property_name || "";
-    basePayload.location = formData.location || "";
+    basePayload.address = formData.address || "";
     basePayload.about = formData.about || "";
     basePayload.is_primary = formData.is_primary || false;
   } else {

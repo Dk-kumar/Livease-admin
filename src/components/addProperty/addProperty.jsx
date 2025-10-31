@@ -143,7 +143,7 @@ const DetailsComponent = () => {
     preference: "",
     possession_date: "",
     lease_duration: "",
-    verification_document: [],
+    verification_document: null,
     aiSuggestion: [],
     property_type: "",
     is_primary: false,
@@ -197,6 +197,14 @@ const DetailsComponent = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Remove a property image by index
+  const handleRemovePropertyImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      property_images: prev.property_images.filter((_, i) => i !== index),
+    }));
   };
   const toggleAiSuggestion = (enabled) =>
     setFormData((prev) => ({
@@ -252,7 +260,7 @@ const DetailsComponent = () => {
           lease_duration: p.lease_duration || "",
           // Ensure verification_document is always an array so uploads and
           // payload building don't end up saving an empty string on the server.
-          verification_document: p.verification_document || [],
+          verification_document: p.verification_document || null,
           aiSuggestion: p.ai_pricing_enabled ? ["enabled"] : [],
           property_type: p.property_type || "",
           is_primary: p.is_primary || false,
@@ -373,6 +381,14 @@ const DetailsComponent = () => {
               <div className="uploaded-images">
                 {formData.property_images.map((img, idx) => (
                   <div key={idx} className="image-preview">
+                    <button
+                      type="button"
+                      className="remove-image"
+                      aria-label={`Remove image ${idx + 1}`}
+                      onClick={() => handleRemovePropertyImage(idx)}
+                    >
+                      ×
+                    </button>
                     <img src={img} alt={`Property ${idx + 1}`} />
                   </div>
                 ))}
