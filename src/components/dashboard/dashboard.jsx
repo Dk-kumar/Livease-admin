@@ -1,81 +1,209 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  getDashboardStats,
+  getMatchingMetrics,
+  getRecentActivity,
+  getRecentSupportTickets,
+} from "../../server/index";
 import "./dashboard.scss";
 
 function Dashboard() {
   const navigate = useNavigate();
 
-  const [stats] = useState([
+  const [stats, setStats] = useState([
     {
       title: "Total Tenant",
-      value: "1586",
-      trend: "increases last month",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
       bg: "dashboard__card--primary",
     },
     {
       title: "Total Landlords",
-      value: "1984",
-      trend: "increases last month",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
       bg: "",
     },
     {
       title: "Total Properties",
-      value: "2003",
-      trend: "increases last month",
-      trendType: "down",
-      trendColor: "red",
+      value: "0",
+      trend: "Loading...",
+      trendType: "up",
+      trendColor: "green",
       bg: "",
     },
     {
       title: "Total Payments",
-      value: "57,08,000",
-      trend: "increases last month",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
       bg: "",
     },
   ]);
 
-  const matchingMetrics = [
+  const [matchingMetrics, setMatchingMetrics] = useState([
     {
       title: "Total Matches",
-      value: "1209",
-      trend: "increases last month",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
     },
     {
       title: "Superlikes Sent",
-      value: "579",
-      trend: "increases last month",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
     },
     {
       title: "Properties Shared",
-      value: "777",
-      trend: "In last 30 Days",
+      value: "0",
+      trend: "Loading...",
       trendType: "up",
       trendColor: "green",
     },
-  ];
+  ]);
 
-  const supportTickets = [
-    { text: 'Urgent: Payment Issue - Ticket #1234', color: 'red' },
-    { text: 'Urgent: Payment Issue - Ticket #1234', color: 'orange' },
-    { text: 'Urgent: Payment Issue - Ticket #1234', color: 'blue' },
-  ];
+  const [supportTickets, setSupportTickets] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const activities = [
-    { img: "/assets/3d_avatar_1.png", name: "Jitesh R. Sharma", action: "New Tennent", time: "10:08 AM" },
-    { img: "assets/3d_avatar_1.png", name: "Jitesh R. Sharma", action: "New Landlord", time: "10:08 AM" },
-    { img: "/assets/3d_avatar_1.png", name: "Jitesh R. Sharma", action: "New Tennent", time: "10:08 AM" },
-    { img: "/assets/3d_avatar_1.png", name: "Jitesh R. Sharma", action: "New Tennent", time: "10:08 AM" },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch all dashboard data in parallel
+      const [statsData, metricsData, activityData, ticketsData] = await Promise.all([
+        getDashboardStats(),
+        getMatchingMetrics(),
+        getRecentActivity(10),
+        getRecentSupportTickets(5),
+      ]);
+
+      // Update stats - handle both response formats (data.data or data directly)
+      const statsResponse = statsData?.data || statsData;
+      if (statsResponse) {
+        const formattedStats = [
+          {
+            title: "Total Tenant",
+            value: statsResponse.total_tenants?.toLocaleString() || "0",
+            trend: "Total tenants",
+            trendType: "up",
+            trendColor: "green",
+            bg: "dashboard__card--primary",
+          },
+          {
+            title: "Total Landlords",
+            value: statsResponse.total_landlords?.toLocaleString() || "0",
+            trend: "Total landlords",
+            trendType: "up",
+            trendColor: "green",
+            bg: "",
+          },
+          {
+            title: "Total Properties",
+            value: statsResponse.total_properties?.toLocaleString() || "0",
+            trend: "Total properties",
+            trendType: "up",
+            trendColor: "green",
+            bg: "",
+          },
+          {
+            title: "Total Payments",
+            value: formatCurrency(statsResponse.total_payments || 0),
+            trend: "Total payments",
+            trendType: "up",
+            trendColor: "green",
+            bg: "",
+          },
+        ];
+        setStats(formattedStats);
+      }
+
+      // Update matching metrics
+      const metricsResponse = metricsData?.data || metricsData;
+      if (metricsResponse) {
+        const formattedMetrics = [
+          {
+            title: "Total Matches",
+            value: metricsResponse.total_matches?.toLocaleString() || "0",
+            trend: "Accepted matches",
+            trendType: "up",
+            trendColor: "green",
+          },
+          {
+            title: "Superlikes Sent",
+            value: metricsResponse.total_superlikes?.toLocaleString() || "0",
+            trend: "Total superlikes",
+            trendType: "up",
+            trendColor: "green",
+          },
+          {
+            title: "Properties Shared",
+            value: metricsResponse.properties_shared?.toLocaleString() || "0",
+            trend: "Properties liked/shared",
+            trendType: "up",
+            trendColor: "green",
+          },
+        ];
+        setMatchingMetrics(formattedMetrics);
+      }
+
+      // Update activities
+      const activityResponse = activityData?.data || activityData;
+      if (activityResponse && Array.isArray(activityResponse)) {
+        const formattedActivities = activityResponse.map((activity) => ({
+          img: activity.profile_pic || "/assets/3d_avatar_1.png",
+          name: activity.name,
+          action: activity.action,
+          time: formatTime(activity.time),
+        }));
+        setActivities(formattedActivities);
+      }
+
+      // Update support tickets
+      const ticketsResponse = ticketsData?.data || ticketsData;
+      if (ticketsResponse && Array.isArray(ticketsResponse)) {
+        setSupportTickets(ticketsResponse);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const handleTicketClick = (ticketId) => {
+    navigate(`/support-ticket/${ticketId}`);
+  };
 
   return (
     <div className="dashboard">
@@ -153,36 +281,62 @@ function Dashboard() {
             <div className="dashboard__metrics-cardbox" style={{ marginTop: '20px' }}>
               <h2 className="dashboard__metrics-title">Support Tickets</h2>
               <div className="dashboard__tickets">
-                {supportTickets.map((ticket, idx) => (
-                  <div key={idx} className="dashboard__ticket-row">
-                    <span style={{ borderLeft: `4px solid ${ticket.color}`, padding: '23px 8px' }}>
-                      {ticket.text}
-                    </span>
-                    <button className="dashboard__ticket-btn">Open Ticket</button>
-                  </div>
-                ))}
+                {loading ? (
+                  <div style={{ padding: '20px', textAlign: 'center' }}>Loading tickets...</div>
+                ) : supportTickets.length === 0 ? (
+                  <div style={{ padding: '20px', textAlign: 'center' }}>No tickets found</div>
+                ) : (
+                  supportTickets.map((ticket, idx) => (
+                    <div key={idx} className="dashboard__ticket-row">
+                      <span style={{ borderLeft: `4px solid ${ticket.color}`, padding: '23px 8px' }}>
+                        {ticket.text}
+                      </span>
+                      <button 
+                        className="dashboard__ticket-btn"
+                        onClick={() => handleTicketClick(ticket.id)}
+                      >
+                        Open Ticket
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
-              <div className="dashboard__tickets-viewmore">View More</div>
+              <div 
+                className="dashboard__tickets-viewmore"
+                onClick={() => navigate("/support-ticket")}
+                style={{ cursor: 'pointer' }}
+              >
+                View More
+              </div>
             </div>
           </div>
           {/* Right Column: Recent Activity */}
           <div className="dashboard__activity">
             <h2 className="dashboard__metrics-title">Recent Activity</h2>
             <div className="dashboard__activity-list">
-              {activities.map((activity, idx) => (
-                <div key={idx} className="dashboard__activity-row">
-                  <img
-                    src={activity.img}
-                    alt="user"
-                    className="dashboard__activity-avatar"
-                  />
-                  <div className="dashboard__activity-info">
-                    <div className="dashboard__activity-name">{activity.name}</div>
-                    <div className="dashboard__activity-action">{activity.action}</div>
+              {loading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Loading activities...</div>
+              ) : activities.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>No recent activity</div>
+              ) : (
+                activities.map((activity, idx) => (
+                  <div key={idx} className="dashboard__activity-row">
+                    <img
+                      src={activity.img}
+                      alt="user"
+                      className="dashboard__activity-avatar"
+                      onError={(e) => {
+                        e.target.src = "/assets/3d_avatar_1.png";
+                      }}
+                    />
+                    <div className="dashboard__activity-info">
+                      <div className="dashboard__activity-name">{activity.name}</div>
+                      <div className="dashboard__activity-action">{activity.action}</div>
+                    </div>
+                    <div className="dashboard__activity-time">{activity.time}</div>
                   </div>
-                  <div className="dashboard__activity-time">{activity.time}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
