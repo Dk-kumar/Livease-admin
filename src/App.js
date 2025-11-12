@@ -66,7 +66,7 @@ function App() {
           <Route path="wallet" element={<Wallet />} />
           <Route path="credit-wallet" element={<CreditWallet />} />
           <Route path="support-ticket" element={<SupportTicket />} />
-          <Route path="payment-issue" element={<PaymentIssue />} />
+          <Route path="payment-issue/:ticketId" element={<PaymentIssue />} />
           <Route path="scraping" element={<ScrapingMod />} />
           <Route path="maintenance-service" element={<MaintenanceService />} />
           <Route path="maintenance-details" element={<MaintenanceDetails />} />

@@ -82,10 +82,18 @@ export const getTickets = (page, recordsPerPage) =>
 		requiresAuth: true
 	});
 
-export const updateTicket = _ID =>
+export const getTicketById = ticketId =>
 	apiRequest({
-		endpoint: `${BASE_URL}/admin/updateTicket/${_ID}`,
+		endpoint: `${BASE_URL}/admin/getTicket/${ticketId}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const updateTicket = (ticketId, data) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/updateTicket/${ticketId}`,
 		method: 'PUT',
+		data,
 		requiresAuth: true
 	});
 
@@ -109,6 +117,14 @@ export const getMaintenanceRequestsById = id =>
 	apiRequest({
 		endpoint: `${BASE_URL}/admin/getServiceRequest/${id}`,
 		method: 'GET',
+		requiresAuth: true
+	});
+
+export const createServiceRequest = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/addServiceRequest`,
+		method: 'POST',
+		data,
 		requiresAuth: true
 	});
 
@@ -138,5 +154,59 @@ export const getRecentSupportTickets = (limit = 5) =>
 	apiRequest({
 		endpoint: `${BASE_URL}/admin/dashboard/supportTickets?limit=${limit}`,
 		method: 'GET',
+		requiresAuth: true
+	});
+
+// Wallet APIs
+export const getWallets = (page, recordsPerPage) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/getWallets?page=${page}&limit=${recordsPerPage}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const getTransactionLogs = (userId, page, recordsPerPage) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/getTransactionLogs/${userId}?page=${page}&limit=${recordsPerPage}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const createTransaction = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/createTransaction`,
+		method: 'POST',
+		data,
+		requiresAuth: true
+	});
+
+// Service Provider APIs
+export const getServiceProviders = (page, recordsPerPage) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/getServiceProviders?page=${page}&limit=${recordsPerPage}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const getServiceProviderById = providerId =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/getServiceProvider/${providerId}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const addServiceProvider = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/addServiceProvider`,
+		method: 'POST',
+		data,
+		requiresAuth: true
+	});
+
+export const updateServiceProvider = (providerId, data) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/updateServiceProvider/${providerId}`,
+		method: 'PUT',
+		data,
 		requiresAuth: true
 	});

@@ -1,64 +1,181 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getTicketById, updateTicket } from '../../server/index';
 import './paymentissue.scss';
 
 function PaymentIssue() {
+  const { ticketId } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [ticket, setTicket] = useState(null);
   const [reply, setReply] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      user: 'Anjali Kapoor',
+  const [messages, setMessages] = useState([]);
+  const [hasSent, setHasSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (ticketId) {
+      fetchTicketDetails();
+    }
+  }, [ticketId]);
+
+  const fetchTicketDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await getTicketById(ticketId);
+      // Backend returns ticket directly, not wrapped
+      const ticketData = response?.ticket || response;
+      if (ticketData) {
+        setTicket(ticketData);
+        
+        // Format ticket data into messages
+        // Note: The backend doesn't have a messages/replies field yet
+        // So we'll show the ticket details as the initial message
+        const userName = ticketData.user?.name || 
+                        (typeof ticketData.user === 'object' ? ticketData.user?.name : 'User') ||
+                        'User';
+        
+        const userMessage = {
+          id: 1,
+          user: userName,
+          avatar: '/assets/3d_avatar_1.png',
+          date: ticketData.createdAt 
+            ? new Date(ticketData.createdAt).toLocaleString('en-IN', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true, 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric' 
+              })
+            : 'Unknown date',
+          content: (
+            <>
+              <p>Category: {ticketData.category || 'Payment Issue'}</p>
+              <p>Status: {ticketData.status || 'Active'}</p>
+              {ticketData.description && <p>{ticketData.description}</p>}
+            </>
+          ),
+          type: 'user',
+          attachments: ticketData.property_images?.map((img, idx) => ({
+            name: `image_${idx + 1}.jpg`,
+            size: 'Unknown',
+            icon: '/assets/Vector (2).png',
+            url: img
+          })) || []
+        };
+        setMessages([userMessage]);
+      }
+    } catch (error) {
+      console.error('Error fetching ticket:', error);
+      setError('Failed to load ticket details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!reply.trim()) return;
+    
+    // Note: Reply API endpoint doesn't exist yet in backend
+    // For now, we'll just add it to local state
+    // TODO: Implement POST /api/v1/admin/ticket/:ticket_id/reply when backend is ready
+    const newMessage = {
+      id: Date.now(),
+      user: 'LiveEase Support',
       avatar: '/assets/3d_avatar_1.png',
-      date: '11:20 AM IST, May 28, 2025',
-      attachments: [
-        { name: 'doc.pdf', size: '215 kB', icon: '/assets/Vector (2).png' },
-        { name: 'doc.pdf', size: '215 kB', icon: '/assets/Icon (5).png' },
-      ],
+      date: new Date().toLocaleString('en-IN', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true, 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      }),
       content: (
         <>
-          <p>Hi,</p>
-          <p>
-            I need Help to Process The Payment through UPI.<br /><br />
-            Its returning failed payment after the checkout. I need to send out this campaign whin today. can you please help ASAP.<br /><br />
-            Thanks
-          </p>
+          <p>{reply}</p>
         </>
       ),
-      type: 'user',
-    }
-  ]);
-  const [hasSent, setHasSent] = useState(false);
-
-  const handleSend = () => {
-    if (!reply.trim()) return;
-    setMessages([
-      ...messages,
-      {
-        id: Date.now(),
-        user: 'LiveEase Support',
-        avatar: '/assets/3d_avatar_1.png',
-        date: new Date().toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }),
-        content: (
-          <>
-            <p>Hi,</p>
-            <p>
-              {reply}
-            </p>
-          </>
-        ),
-        type: 'support',
-      },
-    ]);
+      type: 'support',
+    };
+    
+    setMessages([...messages, newMessage]);
     setReply('');
     setHasSent(true);
+    
+    // TODO: Call reply API when available
+    // try {
+    //   await replyToTicket(ticketId, reply);
+    // } catch (error) {
+    //   console.error('Error sending reply:', error);
+    // }
   };
+
+  const handleResolve = async () => {
+    try {
+      setSubmitting(true);
+      await updateTicket(ticketId, { status: 'resolved' });
+      setTicket(prev => prev ? { ...prev, status: 'resolved' } : null);
+      alert('Ticket resolved successfully!');
+      // Optionally navigate back to tickets list
+      // navigate('/support-ticket');
+    } catch (error) {
+      console.error('Error resolving ticket:', error);
+      alert('Failed to resolve ticket. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    try {
+      setSubmitting(true);
+      await updateTicket(ticketId, { status: 'inactive' });
+      setTicket(prev => prev ? { ...prev, status: 'inactive' } : null);
+      alert('Ticket archived successfully!');
+      navigate('/support-ticket');
+    } catch (error) {
+      console.error('Error archiving ticket:', error);
+      alert('Failed to archive ticket. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+  if (loading) {
+    return (
+      <div className="payment-issue-page">
+        <div style={{ padding: '20px', textAlign: 'center' }}>Loading ticket details...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="payment-issue-page">
+        <div style={{ padding: '20px', color: 'red' }}>{error}</div>
+      </div>
+    );
+  }
+
+  if (!ticket) {
+    return (
+      <div className="payment-issue-page">
+        <div style={{ padding: '20px', textAlign: 'center' }}>Ticket not found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="payment-issue-page">
       <div className="payment-issue-main">
         <div className="payment-issue-card">
           <div className="payment-issue-header-row">
-            <h2>Payment Issue</h2>
-            <span className="payment-issue-ticketno">#32416552</span>
+            <h2>{ticket.category || 'Payment Issue'}</h2>
+            <span className="payment-issue-ticketno">#{ticketId}</span>
           </div>
           <div className="payment-issue-messages">
             {messages.map((msg, idx) => (
@@ -104,7 +221,7 @@ function PaymentIssue() {
           {!hasSent && (
             <div className="payment-issue-reply-card">
               <div className="payment-issue-reply-header">
-                <span>Reply to: Anjali Kapoor</span>
+                <span>Reply to: {ticket.user?.name || (typeof ticket.user === 'object' ? ticket.user?.name : 'User') || 'User'}</span>
               </div>
               <textarea
                 placeholder="e.g., Sync with payment gateway"
@@ -125,9 +242,27 @@ function PaymentIssue() {
         {/* Show action buttons below card after send, else on the right */}
         { (
           <div className="payment-issue-actions-row">
-            <button className="send-btn" onClick={handleSend}>Send Message</button>
-            <button className="resolve-btn">Resolve</button>
-            <button className="archive-btn" disabled>Archive</button>
+            <button 
+              className="send-btn" 
+              onClick={handleSend}
+              disabled={submitting || !reply.trim()}
+            >
+              Send Message
+            </button>
+            <button 
+              className="resolve-btn" 
+              onClick={handleResolve}
+              disabled={submitting || ticket.status === 'resolved'}
+            >
+              {ticket.status === 'resolved' ? 'Resolved' : 'Resolve'}
+            </button>
+            <button 
+              className="archive-btn" 
+              onClick={handleArchive}
+              disabled={submitting || ticket.status === 'inactive'}
+            >
+              {ticket.status === 'inactive' ? 'Archived' : 'Archive'}
+            </button>
           </div>
         )}
       </div>
