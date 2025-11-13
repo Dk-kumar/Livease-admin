@@ -210,3 +210,56 @@ export const updateServiceProvider = (providerId, data) =>
 		data,
 		requiresAuth: true
 	});
+
+// Property Checkup APIs
+export const getPropertyCheckups = (page, recordsPerPage) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup?page=${page}&limit=${recordsPerPage}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const getPropertyCheckupById = checkupId =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup/${checkupId}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const getCheckupsByProperty = propertyId =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup/property/${propertyId}`,
+		method: 'GET',
+		requiresAuth: true
+	});
+
+export const createPropertyCheckup = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup`,
+		method: 'POST',
+		data,
+		requiresAuth: true
+	});
+
+export const submitCheckupPictures = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup/submit`,
+		method: 'PUT',
+		data,
+		requiresAuth: true
+	});
+
+export const approvePropertyCheckup = checkupId =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup/${checkupId}/approve`,
+		method: 'PUT',
+		requiresAuth: true
+	});
+
+export const rejectPropertyCheckup = (checkupId, data) =>
+	apiRequest({
+		endpoint: `${BASE_URL}/propertyCheckup/${checkupId}/reject`,
+		method: 'PUT',
+		data,
+		requiresAuth: true
+	});
