@@ -19,6 +19,7 @@ import Feedback from "./components/feedback/feedback";
 import Reminder from "./components/reminder/reminder";
 import MarkComplete from "./components/markComplete/markComplete";
 import PropertyCheckUps from "./components/PropertyCheckUps/PropertyCheckUps";
+import PropertyCheckupDetails from "./components/PropertyCheckupDetails/PropertyCheckupDetails";
 import RentalAgreement from "./components/RentalAgreement/RentalAgreement";
 import Login from "./components/login/login";
 
@@ -66,7 +67,7 @@ function App() {
           <Route path="wallet" element={<Wallet />} />
           <Route path="credit-wallet" element={<CreditWallet />} />
           <Route path="support-ticket" element={<SupportTicket />} />
-          <Route path="payment-issue" element={<PaymentIssue />} />
+          <Route path="payment-issue/:ticketId" element={<PaymentIssue />} />
           <Route path="scraping" element={<ScrapingMod />} />
           <Route path="maintenance-service" element={<MaintenanceService />} />
           <Route path="maintenance-details" element={<MaintenanceDetails />} />
@@ -75,6 +76,7 @@ function App() {
           <Route path="reminder" element={<Reminder />} />
           <Route path="mark-complete" element={<MarkComplete />} />
           <Route path="property-checkups" element={<PropertyCheckUps />} />
+          <Route path="property-checkup/:id" element={<PropertyCheckupDetails />} />
           <Route path="rental-agreement" element={<RentalAgreement />} />
         </Route>
       </Routes>
