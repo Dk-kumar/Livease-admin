@@ -35,13 +35,15 @@ const Login = () => {
       const response = await signIn(payload);
       console.log(response)
 
-      // ✅ Expecting API response shape like:
-      // { success: true, token: "xyz", message: "Login successful" }
-      if (response?.token) {
-        localStorage.setItem("authToken", response.token);
+      // ✅ Handle both response formats: { token: "..." } or { data: { token: "..." } }
+      const token = response?.token || response?.data?.token;
+      if (token) {
+        localStorage.setItem("authToken", token);
+        // Store admin email for display in header
+        localStorage.setItem("adminEmail", formData.email);
         navigate("/"); // redirect to dashboard
       } else {
-        setError(response?.message || "Invalid email or password");
+        setError(response?.message || response?.data?.message || "Invalid email or password");
       }
     } catch (err) {
       console.error("Login error:", err);

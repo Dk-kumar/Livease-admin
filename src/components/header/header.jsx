@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./header.scss";
-import { FiSearch, FiRefreshCcw, FiBell } from "react-icons/fi";
+import { getCurrentUser } from "../../util/helper/authHelper";
 
 function Header() {
+  const [userInfo, setUserInfo] = useState({
+    name: "Admin",
+    email: "admin@livease.com",
+    profilePic: "/assets/3d_avatar_12.png"
+  });
+
+  useEffect(() => {
+    // Get user info from token and localStorage
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setUserInfo({
+        name: currentUser.name,
+        email: currentUser.email,
+        profilePic: currentUser.profilePic || "/assets/3d_avatar_12.png"
+      });
+    }
+  }, []);
+
   return (
     <div className="header rad">
       {/* Search Bar */}
       <div className="search-box-container">
-        <img src="/assets/Icon.png" />
+        <img src="/assets/Icon.png" alt="Search icon" />
         <input type="text" placeholder="Search here" className="search-box" />
       </div>
 
@@ -20,10 +38,10 @@ function Header() {
           <img src="/assets/Frame 548.png" alt="avatar" />
         </div>
         <div className="profile">
-          <img src="/assets/3d_avatar_12.png" alt="avatar" />
+          <img src={userInfo.profilePic} alt="avatar" />
           <div className="info">
-            <h4>Admin</h4>
-            <span>admin@gmail.com</span>
+            <h4>{userInfo.name}</h4>
+            <span>{userInfo.email}</span>
           </div>
         </div>
       </div>

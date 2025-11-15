@@ -1,6 +1,6 @@
 import { apiRequest } from '../util/helper/apiHelper';
-export const BASE_URL = 'https://livease-backend.onrender.com/api/v1';
-// export const BASE_URL = 'http://localhost:4001/api/v1';
+// export const BASE_URL = 'https://livease-backend.onrender.com/api/v1';
+export const BASE_URL = 'http://localhost:4001/api/v1';
 export const signIn = data =>
 	apiRequest({
 		endpoint: `${BASE_URL}/admin/signInPassword`,
@@ -56,6 +56,14 @@ export const updateUserStatus = (data, _id) =>
 	apiRequest({
 		endpoint: `${BASE_URL}/admin/updateUser/${_id}`,
 		method: 'PUT',
+		data,
+		requiresAuth: true
+	});
+
+export const addUser = data =>
+	apiRequest({
+		endpoint: `${BASE_URL}/admin/addUser`,
+		method: 'POST',
 		data,
 		requiresAuth: true
 	});

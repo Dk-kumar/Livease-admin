@@ -27,7 +27,7 @@ import { Navigate } from "react-router-dom";
 import DetailsComponent from "./components/addProperty/addProperty";
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("authToken"); // or any login flag
+  const isAuthenticated = localStorage.getItem("authToken");
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
@@ -38,13 +38,13 @@ function App() {
         {/* Login route (accessible without authentication) */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected routes */}
+        {/* Protected routes - redirects to /login if not authenticated */}
         <Route
           path="/"
           element={
-            // <ProtectedRoute>
-            <HomePage />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
           }
         >
           <Route index element={<Dashboard />} />

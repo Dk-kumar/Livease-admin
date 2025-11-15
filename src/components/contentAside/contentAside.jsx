@@ -1,10 +1,20 @@
 import React, { useState } from "react";
 import "./contentAside.scss";
 import { FiGrid, FiSettings, FiLogOut } from "react-icons/fi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const ContentAside = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("adminEmail");
+    
+    // Redirect to login page
+    navigate("/login", { replace: true });
+  };
 
   // Menu data (can later come from API or config file)
   const [menuItems] = useState([
@@ -79,7 +89,7 @@ const ContentAside = () => {
           <img src="/assets/Vector (1).png" alt="avatar" />
           <span>Settings</span>
         </div>
-        <div className="footer-item logout">
+        <div className="footer-item logout" onClick={handleLogout} style={{ cursor: "pointer" }}>
           <img src="/assets/3d_avatar_12.png" alt="avatar" />
           <span>Log out</span>
         </div>
